@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -52,6 +53,30 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				agri: {
+					50: '#f0f9e8',
+					100: '#dbf0d0',
+					200: '#b8e0a4',
+					300: '#8ecb70',
+					400: '#68b544',
+					500: '#4d9d29',
+					600: '#3d7d21',
+					700: '#305e1a',
+					800: '#254015',
+					900: '#1e3412',
+				},
+				earth: {
+					50: '#f9f5f0',
+					100: '#f0e6d8',
+					200: '#e0cdb3',
+					300: '#ccaf89',
+					400: '#b89064',
+					500: '#a67b4d',
+					600: '#8c633d',
+					700: '#6d4b30',
+					800: '#503726',
+					900: '#3a291d',
+				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
@@ -84,11 +109,22 @@ export default {
 					to: {
 						height: '0'
 					}
-				}
+				},
+				'fade-in': {
+					'0%': {
+						opacity: '0',
+						transform: 'translateY(10px)'
+					},
+					'100%': {
+						opacity: '1',
+						transform: 'translateY(0)'
+					}
+				},
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'fade-in': 'fade-in 0.5s ease-out',
 			}
 		}
 	},
