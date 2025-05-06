@@ -1,212 +1,38 @@
 
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, Trash2, Upload } from 'lucide-react';
-import { useToast } from '@/components/ui/use-toast';
-
-interface ProductFormData {
-  name: string;
-  shortDescription: string;
-  description: string;
-  price: string;
-  stock: string;
-  category: string;
-  images: File[];
-  colors: string[];
-  specifications: string[];
-}
+import { useAddProduct } from '@/hooks/useAddProduct';
+import BasicProductInfo from './components/BasicProductInfo';
+import ProductImages from './components/ProductImages';
+import ProductColors from './components/ProductColors';
+import ProductSpecifications from './components/ProductSpecifications';
 
 const AddProduct = () => {
   const { currentUser } = useAuth();
-  const navigate = useNavigate();
-  const { toast } = useToast();
-  
-  const [formData, setFormData] = useState<ProductFormData>({
-    name: '',
-    shortDescription: '',
-    description: '',
-    price: '',
-    stock: '',
-    category: '',
-    images: [],
-    colors: ['Red'],
-    specifications: ['']
-  });
-  
-  const [imagePreviewUrls, setImagePreviewUrls] = useState<string[]>([]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { 
+    formData, 
+    imagePreviewUrls, 
+    isSubmitting, 
+    setFormData,
+    handleSubmit,
+    handleImageUpload,
+    removeImage,
+    addColor,
+    updateColor,
+    removeColor,
+    addSpecification,
+    updateSpecification,
+    removeSpecification,
+    navigate
+  } = useAddProduct();
   
   if (!currentUser || !currentUser.isAdmin) {
     navigate('/');
     return null;
   }
-  
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Basic validation
-    if (
-      !formData.name ||
-      !formData.description ||
-      !formData.price ||
-      !formData.stock ||
-      !formData.category ||
-      formData.images.length === 0
-    ) {
-      toast({
-        title: 'Validation Error',
-        description: 'Please fill all required fields.',
-        variant: 'destructive',
-      });
-      return;
-    }
-    
-    setIsSubmitting(true);
-    
-    try {
-      // In a real app, this would send data to an API
-      // Simulate a successful product add
-      setTimeout(() => {
-        toast({
-          title: 'Product Added',
-          description: 'The product has been successfully added to your store.',
-        });
-        
-        // Reset form
-        setFormData({
-          name: '',
-          shortDescription: '',
-          description: '',
-          price: '',
-          stock: '',
-          category: '',
-          images: [],
-          colors: ['Red'],
-          specifications: ['']
-        });
-        setImagePreviewUrls([]);
-        
-        setIsSubmitting(false);
-      }, 1000);
-    } catch (error) {
-      console.error('Error adding product:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to add product. Please try again.',
-        variant: 'destructive',
-      });
-      setIsSubmitting(false);
-    }
-  };
-  
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const newFiles = Array.from(e.target.files);
-      const newImages = [...formData.images, ...newFiles];
-      setFormData({
-        ...formData,
-        images: newImages
-      });
-      
-      // Create image previews
-      const newPreviewUrls = newFiles.map(file => URL.createObjectURL(file));
-      setImagePreviewUrls([...imagePreviewUrls, ...newPreviewUrls]);
-    }
-  };
-  
-  const removeImage = (index: number) => {
-    const updatedImages = [...formData.images];
-    updatedImages.splice(index, 1);
-    
-    const updatedPreviews = [...imagePreviewUrls];
-    URL.revokeObjectURL(updatedPreviews[index]); // Clean up URL object
-    updatedPreviews.splice(index, 1);
-    
-    setFormData({
-      ...formData,
-      images: updatedImages
-    });
-    setImagePreviewUrls(updatedPreviews);
-  };
-  
-  const addColor = () => {
-    setFormData({
-      ...formData,
-      colors: [...formData.colors, '']
-    });
-  };
-  
-  const updateColor = (index: number, value: string) => {
-    const updatedColors = [...formData.colors];
-    updatedColors[index] = value;
-    setFormData({
-      ...formData,
-      colors: updatedColors
-    });
-  };
-  
-  const removeColor = (index: number) => {
-    if (formData.colors.length <= 1) return;
-    
-    const updatedColors = [...formData.colors];
-    updatedColors.splice(index, 1);
-    setFormData({
-      ...formData,
-      colors: updatedColors
-    });
-  };
-  
-  const addSpecification = () => {
-    setFormData({
-      ...formData,
-      specifications: [...formData.specifications, '']
-    });
-  };
-  
-  const updateSpecification = (index: number, value: string) => {
-    const updatedSpecs = [...formData.specifications];
-    updatedSpecs[index] = value;
-    setFormData({
-      ...formData,
-      specifications: updatedSpecs
-    });
-  };
-  
-  const removeSpecification = (index: number) => {
-    if (formData.specifications.length <= 1) return;
-    
-    const updatedSpecs = [...formData.specifications];
-    updatedSpecs.splice(index, 1);
-    setFormData({
-      ...formData,
-      specifications: updatedSpecs
-    });
-  };
-  
-  const colorOptions = [
-    'Red', 'Blue', 'Green', 'Yellow', 'Black', 'White', 'Orange', 
-    'Purple', 'Brown', 'Gray', 'Silver', 'Gold'
-  ];
-  
-  const categoryOptions = [
-    'Soil Preparation', 'Planting', 'Irrigation', 'Harvesting',
-    'Fertilization', 'Testing Equipment', 'Storage'
-  ];
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -234,246 +60,37 @@ const AddProduct = () => {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Basic Information */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium">Basic Information</h3>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Product Name*</Label>
-                    <Input
-                      id="name"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      disabled={isSubmitting}
-                      required
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="category">Category*</Label>
-                    <Select
-                      value={formData.category}
-                      onValueChange={(value) => setFormData({ ...formData, category: value })}
-                      disabled={isSubmitting}
-                    >
-                      <SelectTrigger id="category">
-                        <SelectValue placeholder="Select a category" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {categoryOptions.map(category => (
-                          <SelectItem key={category} value={category}>
-                            {category}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="shortDescription">Short Description* (For product listings)</Label>
-                  <Input
-                    id="shortDescription"
-                    value={formData.shortDescription}
-                    onChange={(e) => setFormData({ ...formData, shortDescription: e.target.value })}
-                    disabled={isSubmitting}
-                    maxLength={100}
-                    required
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="description">Full Description*</Label>
-                  <Textarea
-                    id="description"
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    disabled={isSubmitting}
-                    className="min-h-[150px]"
-                    required
-                  />
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="price">Price (₹)*</Label>
-                    <Input
-                      id="price"
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={formData.price}
-                      onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                      disabled={isSubmitting}
-                      required
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="stock">Stock Quantity*</Label>
-                    <Input
-                      id="stock"
-                      type="number"
-                      min="0"
-                      step="1"
-                      value={formData.stock}
-                      onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
-                      disabled={isSubmitting}
-                      required
-                    />
-                  </div>
-                </div>
-              </div>
+              <BasicProductInfo 
+                formData={formData}
+                setFormData={setFormData}
+                isSubmitting={isSubmitting}
+              />
               
               {/* Product Images */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium">Product Images*</h3>
-                <p className="text-sm text-gray-600">
-                  Upload product images. The first image will be used as the main product image.
-                </p>
-                
-                <div className="space-y-4">
-                  <Label htmlFor="image-upload" className="cursor-pointer">
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:bg-gray-50 transition-colors">
-                      <Upload className="h-8 w-8 mx-auto mb-2 text-gray-400" />
-                      <p className="text-sm text-gray-600">
-                        Click to upload product images
-                      </p>
-                    </div>
-                    <Input
-                      id="image-upload"
-                      type="file"
-                      accept="image/*"
-                      multiple
-                      className="hidden"
-                      onChange={handleImageUpload}
-                      disabled={isSubmitting}
-                    />
-                  </Label>
-                  
-                  {imagePreviewUrls.length > 0 && (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                      {imagePreviewUrls.map((url, index) => (
-                        <div key={index} className="relative group">
-                          <div className="h-32 w-full rounded overflow-hidden border">
-                            <img 
-                              src={url} 
-                              alt={`Product ${index}`} 
-                              className="h-full w-full object-cover"
-                            />
-                          </div>
-                          <button
-                            type="button"
-                            className="absolute top-1 right-1 bg-white rounded-full p-1 shadow opacity-80 hover:opacity-100"
-                            onClick={() => removeImage(index)}
-                            disabled={isSubmitting}
-                          >
-                            <Trash2 className="h-4 w-4 text-red-500" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
+              <ProductImages 
+                imagePreviewUrls={imagePreviewUrls}
+                handleImageUpload={handleImageUpload}
+                removeImage={removeImage}
+                isSubmitting={isSubmitting}
+              />
               
               {/* Colors */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium">Available Colors</h3>
-                
-                <div className="space-y-3">
-                  {formData.colors.map((color, index) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <div className="flex-grow">
-                        <Select
-                          value={color}
-                          onValueChange={(value) => updateColor(index, value)}
-                          disabled={isSubmitting}
-                        >
-                          <SelectTrigger id={`color-${index}`}>
-                            <SelectValue placeholder="Select a color" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {colorOptions.map(color => (
-                              <SelectItem key={color} value={color}>
-                                <div className="flex items-center">
-                                  <div 
-                                    className="w-4 h-4 rounded-full mr-2"
-                                    style={{ backgroundColor: color.toLowerCase() }}
-                                  ></div>
-                                  {color}
-                                </div>
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => removeColor(index)}
-                        disabled={formData.colors.length <= 1 || isSubmitting}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
-                  
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={addColor}
-                    disabled={isSubmitting}
-                  >
-                    <Plus className="h-4 w-4 mr-2" /> Add Color
-                  </Button>
-                </div>
-              </div>
+              <ProductColors 
+                colors={formData.colors}
+                updateColor={updateColor}
+                removeColor={removeColor}
+                addColor={addColor}
+                isSubmitting={isSubmitting}
+              />
               
               {/* Specifications */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium">Specifications</h3>
-                <p className="text-sm text-gray-600">
-                  Add specifications for your product (e.g., "Weight: 5kg", "Dimensions: 10x20x30cm").
-                </p>
-                
-                <div className="space-y-3">
-                  {formData.specifications.map((spec, index) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <Input
-                        value={spec}
-                        onChange={(e) => updateSpecification(index, e.target.value)}
-                        placeholder="Weight: 5kg, Dimensions: 10x20x30cm"
-                        disabled={isSubmitting}
-                        className="flex-grow"
-                      />
-                      
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => removeSpecification(index)}
-                        disabled={formData.specifications.length <= 1 || isSubmitting}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
-                  
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={addSpecification}
-                    disabled={isSubmitting}
-                  >
-                    <Plus className="h-4 w-4 mr-2" /> Add Specification
-                  </Button>
-                </div>
-              </div>
+              <ProductSpecifications 
+                specifications={formData.specifications}
+                updateSpecification={updateSpecification}
+                removeSpecification={removeSpecification}
+                addSpecification={addSpecification}
+                isSubmitting={isSubmitting}
+              />
             </form>
           </CardContent>
           
