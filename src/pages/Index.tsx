@@ -66,8 +66,11 @@ const Index = () => {
       
       <main className="flex-grow">
         {/* Hero Carousel */}
-        <section className="bg-gradient-to-r from-agri-700 to-agri-800 text-white">
-          <ProductCarousel products={topSellingProducts} title="Top Selling Products" />
+        <section className="bg-gradient-to-r from-agri-700 to-agri-800 py-8">
+          <div className="container mx-auto">
+            <h2 className="text-2xl font-bold mb-6 text-white">Top Selling Products</h2>
+            <ProductCarousel products={topSellingProducts} title="" />
+          </div>
         </section>
         
         {/* Search Bar */}
@@ -107,7 +110,7 @@ const Index = () => {
           
           <div className="flex flex-col md:flex-row gap-6">
             {/* Filter Sidebar */}
-            <div className="hidden md:block w-full md:w-64 flex-shrink-0">
+            <div className="w-full md:w-64 flex-shrink-0">
               <FilterSidebar 
                 products={products} 
                 onFilter={setFilteredProducts} 
@@ -135,12 +138,6 @@ const Index = () => {
               )}
             </div>
           </div>
-          
-          {/* Mobile Filter Sidebar - shown with button */}
-          <FilterSidebar 
-            products={products} 
-            onFilter={setFilteredProducts} 
-          />
         </section>
       </main>
       
