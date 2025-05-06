@@ -23,6 +23,7 @@ import AdminPanel from "./pages/admin/AdminPanel";
 import AddProduct from "./pages/admin/AddProduct";
 import UpdateProducts from "./pages/admin/UpdateProducts";
 import ViewOrders from "./pages/admin/ViewOrders";
+import Reports from "./pages/admin/Reports";
 
 const queryClient = new QueryClient();
 
@@ -48,6 +49,7 @@ const App = () => (
             <Route path="/admin/add-product" element={<AddProduct />} />
             <Route path="/admin/update-products" element={<UpdateProducts />} />
             <Route path="/admin/orders" element={<ViewOrders />} />
+            <Route path="/admin/reports" element={<Reports />} />
             
             {/* 404 Route */}
             <Route path="*" element={<NotFound />} />

@@ -17,7 +17,6 @@ interface FilterOptions {
   priceRange: [number, number];
   categories: string[];
   colors: string[];
-  specifications: Record<string, string[]>;
 }
 
 const FilterSidebar = ({ products, onFilter, className }: FilterSidebarProps) => {
@@ -25,8 +24,7 @@ const FilterSidebar = ({ products, onFilter, className }: FilterSidebarProps) =>
   const [filters, setFilters] = useState<FilterOptions>({
     priceRange: [0, 200000],
     categories: [],
-    colors: [],
-    specifications: {}
+    colors: []
   });
 
   // Calculate initial values
@@ -43,27 +41,9 @@ const FilterSidebar = ({ products, onFilter, className }: FilterSidebarProps) =>
     }
   }, [products]);
 
-  // Extract unique categories, colors, and specifications
+  // Extract unique categories and colors
   const uniqueCategories = [...new Set(products.map(p => p.category))];
   const uniqueColors = [...new Set(products.flatMap(p => p.colors))];
-  
-  // Get unique specification keys
-  const specKeys = new Set<string>();
-  products.forEach(p => {
-    Object.keys(p.specifications).forEach(key => specKeys.add(key));
-  });
-  
-  // Get unique specification values for each key
-  const specOptions: Record<string, string[]> = {};
-  Array.from(specKeys).forEach(key => {
-    const values = new Set<string>();
-    products.forEach(p => {
-      if (key in p.specifications) {
-        values.add(p.specifications[key]);
-      }
-    });
-    specOptions[key] = Array.from(values);
-  });
 
   const handlePriceChange = (value: number[]) => {
     setFilters(prev => ({
@@ -92,23 +72,6 @@ const FilterSidebar = ({ products, onFilter, className }: FilterSidebarProps) =>
     });
   };
 
-  const toggleSpecification = (key: string, value: string) => {
-    setFilters(prev => {
-      const specValues = prev.specifications[key] || [];
-      const newSpecValues = specValues.includes(value)
-        ? specValues.filter(v => v !== value)
-        : [...specValues, value];
-      
-      return {
-        ...prev,
-        specifications: {
-          ...prev.specifications,
-          [key]: newSpecValues
-        }
-      };
-    });
-  };
-
   const applyFilters = () => {
     let filteredProducts = [...products];
     
@@ -129,15 +92,6 @@ const FilterSidebar = ({ products, onFilter, className }: FilterSidebarProps) =>
       );
     }
     
-    // Filter by specifications
-    Object.entries(filters.specifications).forEach(([key, values]) => {
-      if (values.length > 0) {
-        filteredProducts = filteredProducts.filter(
-          p => key in p.specifications && values.includes(p.specifications[key])
-        );
-      }
-    });
-    
     onFilter(filteredProducts);
     
     // On mobile, close the filter after applying
@@ -154,8 +108,7 @@ const FilterSidebar = ({ products, onFilter, className }: FilterSidebarProps) =>
     setFilters({
       priceRange: [minPrice, maxPrice],
       categories: [],
-      colors: [],
-      specifications: {}
+      colors: []
     });
     
     onFilter(products);
@@ -271,30 +224,6 @@ const FilterSidebar = ({ products, onFilter, className }: FilterSidebarProps) =>
                 ))}
               </div>
             </div>
-            
-            {/* Specifications */}
-            {Object.entries(specOptions).map(([key, values]) => (
-              <div key={key}>
-                <h4 className="font-medium mb-2">{key}</h4>
-                <div className="space-y-2">
-                  {values.map(value => (
-                    <div key={`${key}-${value}`} className="flex items-center">
-                      <Checkbox 
-                        id={`spec-${key}-${value}`}
-                        checked={(filters.specifications[key] || []).includes(value)}
-                        onCheckedChange={() => toggleSpecification(key, value)}
-                      />
-                      <Label 
-                        htmlFor={`spec-${key}-${value}`}
-                        className="ml-2 text-sm font-normal cursor-pointer"
-                      >
-                        {value}
-                      </Label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
           </div>
           
           {/* Filter actions */}
