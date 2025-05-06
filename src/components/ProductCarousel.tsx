@@ -44,22 +44,12 @@ const ProductCarousel = ({ products, title }: ProductCarouselProps) => {
         <CarouselContent>
           {products.map((product) => (
             <CarouselItem key={product.id} className="flex justify-center">
-              <div className="relative w-full max-w-md overflow-hidden rounded-lg shadow-lg bg-white">
+              <div className="relative w-full max-w-md overflow-hidden rounded-lg shadow-lg">
                 <img 
                   src={product.images[0]} 
                   alt={product.name}
                   className="w-full h-64 object-cover"
                 />
-                <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-60 text-white p-4">
-                  <h3 className="text-xl font-bold mb-1">{product.name}</h3>
-                  <p className="text-sm line-clamp-1">{product.shortDescription}</p>
-                  <div className="mt-2 flex justify-between items-center">
-                    <span className="text-lg font-bold">₹{product.price.toLocaleString()}</span>
-                    <span className="bg-agri-500 text-white text-xs px-2 py-1 rounded">
-                      Top Selling
-                    </span>
-                  </div>
-                </div>
               </div>
             </CarouselItem>
           ))}

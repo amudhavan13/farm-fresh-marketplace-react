@@ -68,7 +68,6 @@ const Index = () => {
         {/* Hero Carousel */}
         <section className="bg-gradient-to-r from-agri-700 to-agri-800 py-8">
           <div className="container mx-auto">
-            <h2 className="text-2xl font-bold mb-6 text-white">Top Selling Products</h2>
             <ProductCarousel products={topSellingProducts} title="" />
           </div>
         </section>
